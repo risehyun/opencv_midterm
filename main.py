@@ -17,11 +17,15 @@ def create_colorTable(height, width, color):
     return bar, (red, green, blue)
 
 # 화면에 그림을 그리는 함수
-def onMouse(event, x, y, flags, param):
+def onMouse_draw(event, x, y, flags, param):
     global title, oldx, oldy
 
     if event == cv2.EVENT_LBUTTONDOWN:
         oldx, oldy = x, y
+
+    elif event == cv2.EVENT_RBUTTONDOWN:
+        cv2.imwrite('Result/DrawImage.jpg', canvas)
+        print('Draw Image 저장')
 
     elif event == cv2.EVENT_MOUSEMOVE:
         if flags & cv2.EVENT_FLAG_LBUTTON:
@@ -29,25 +33,14 @@ def onMouse(event, x, y, flags, param):
             cv2.imshow(title, canvas)
             oldx, oldy = x, y
 
-def onButton(event, x, y, flags, param):
+def onMouse_colorTable(event, x, y, flags, param):
     global brush_color
     if event == cv2.EVENT_LBUTTONDOWN:
         i = 0
         for i in range(len(button_pt)):
             for j in range(0, 11):
                 if y > button_pt[i][0] and y < button_pt[i][1] and x > button_pt[i][2] and x < button_pt[i][3]:
-                    brush_color = bgr_colors[j]
-                    print()
-
-
-#            elif y > button_pt[1][0] and y < button_pt[1][1] and x > button_pt[1][2] and x < button_pt[1][3]:
- #               brush_color = bgr_colors[1]
-
-  #          elif y > button_pt[2][0] and y < button_pt[2][1] and x > button_pt[2][2] and x < button_pt[2][3]:
-   #             brush_color = bgr_colors[2]
-
-
-    #    if y > button[0] and y < button[1] and x > button[2] and x < button[3]:
+                    brush_color = bgr_colors[i]
 
     elif event == cv2.EVENT_RBUTTONDOWN:
         cv2.imwrite('Result/ColorTable.jpg', img_bar)
@@ -59,13 +52,12 @@ button_pt = [(0, 100, 0, 100), (0, 100, 100, 200), (0, 100, 200, 300), (0, 100, 
 (0, 100, 500, 600), (0, 100, 600, 700), (0, 100, 700, 800), (0, 100, 800, 900), (0, 100, 900, 1000)]
 button_pt = np.array(button_pt)
 
-
 canvas = np.full((300, 400, 3), (255, 255, 255), np.uint8)
 pt = (-1, -1)
-title = "Draw Canvas"
+title = 'Draw Canvas'
 
 # 이미지를 읽어 옴.
-img = cv2.imread('Image/testImage.jpg')
+img = cv2.imread('Image/cat.jpg')
 
 # 이미지의 높이와 너비를 알기 위해 픽셀을 행렬로 나타내 크기를 알아냄.
 height, width, _ = np.shape(img)
@@ -107,35 +99,22 @@ for index, row in enumerate(rgb_values):
 #    print(bgr_colors)
     print(f'{index + 1}. RGB{row}')
 
-
-#button_pt = np.array[(0, 100, 0, 100), (0, 100, 100, 200), (0, 100, 200, 300), (0, 100, 300, 400), (0, 100, 400, 500),
-#(0, 100, 500, 600), (0, 100, 600, 700), (0, 100, 700, 800), (0, 100, 800, 900), (0, 100, 900, 1000)]
-
 h, w, _ = np.shape(img_bar)
 print(h, w)
 
-# y1, y2, x1, x2
-button = (0, 100, 0, 100)
-button2 = (0, 100, 100, 200)
-button3 = (0, 100, 200, 300)
-button4 = (0, 100, 300, 400)
-button5 = (0, 100, 400, 500)
-button6 = (0, 100, 500, 600)
-button7 = (0, 100, 600, 700)
-button8 = (0, 100, 700, 800)
-button9 = (0, 100, 800, 900)
-button10 = (0, 100, 900, 1000)
-
-
-#img_bar[button10[0]:button10[1],button10[2]:button10[3]] = 180
 
 # 화면을 출력합니다.
 cv2.imshow('Image', img)
 cv2.imshow('Color Table', img_bar)
 cv2.imshow(title, canvas)
-cv2.setMouseCallback(title, onMouse)
-cv2.setMouseCallback('Color Table', onButton)
+cv2.setMouseCallback(title, onMouse_draw)
+cv2.setMouseCallback('Color Table', onMouse_colorTable)
 
+
+# 윈도우 화면을 지정된 위치로 이동합니다.
+cv2.moveWindow('Image', 200, 200)
+cv2.moveWindow(title, 800, 200)
+cv2.moveWindow('Color Table', 200, 550)
 
 
 cv2.waitKey(0)

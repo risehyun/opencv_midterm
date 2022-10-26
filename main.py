@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-# 컬러 테이블을 생성하는 함수
+# 컬러 테이블 생성 함수
 def create_colorTable(height, width, color):
     bar = np.zeros((height, width, 3), np.uint8)
 
@@ -11,14 +11,16 @@ def create_colorTable(height, width, color):
     # bgr 포맷을 rgb 포맷으로 바꾸기 위해 rgb 순서에 맞게 변수를 할당해 줌.
     red, green, blue = int(color[2]), int(color[1]), int(color[0])
 
+    # RGB 타입과 별개로 그림판 브러쉬에 적용할 색상을 bgr 순서를 가진 리스트에 저장함.
     bgr_colors.append((blue, green, red))
 
-    # 할당된 값들을 반환해 줌.
+    # 할당된 RGB 값들을 반환해 줌.
     return bar, (red, green, blue)
+
 
 # 화면에 그림을 그리는 함수
 def onMouse_draw(event, x, y, flags, param):
-    global title, oldx, oldy
+    global oldx, oldy
 
     if event == cv2.EVENT_LBUTTONDOWN:
         oldx, oldy = x, y
@@ -30,7 +32,7 @@ def onMouse_draw(event, x, y, flags, param):
     elif event == cv2.EVENT_MOUSEMOVE:
         if flags & cv2.EVENT_FLAG_LBUTTON:
             cv2.line(canvas, (oldx, oldy), (x, y), brush_color, 4, cv2.LINE_AA)
-            cv2.imshow(title, canvas)
+            cv2.imshow('Draw Canvas', canvas)
             oldx, oldy = x, y
 
 def onMouse_colorTable(event, x, y, flags, param):
@@ -54,7 +56,6 @@ button_pt = np.array(button_pt)
 
 canvas = np.full((300, 400, 3), (255, 255, 255), np.uint8)
 pt = (-1, -1)
-title = 'Draw Canvas'
 
 # 이미지를 읽어 옴.
 img = cv2.imread('Image/cat.jpg')
@@ -95,26 +96,20 @@ img_bar = np.hstack(bars)
 for index, row in enumerate(rgb_values):
     image = cv2.putText(img_bar, f'{index + 1}', (5 + 100 * index, 20 - 1),
                         font, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-#    colors.append(row);
-#    print(bgr_colors)
-    print(f'{index + 1}. RGB{row}')
-
-h, w, _ = np.shape(img_bar)
-print(h, w)
+#    print(f'{index + 1}. RGB{row}')
 
 
 # 화면을 출력합니다.
 cv2.imshow('Image', img)
 cv2.imshow('Color Table', img_bar)
-cv2.imshow(title, canvas)
-cv2.setMouseCallback(title, onMouse_draw)
+cv2.imshow('Draw Canvas', canvas)
+cv2.setMouseCallback('Draw Canvas', onMouse_draw)
 cv2.setMouseCallback('Color Table', onMouse_colorTable)
 
-
-# 윈도우 화면을 지정된 위치로 이동합니다.
+# 윈도우 화면을 지정된 위치로 이동 합니다.
 cv2.moveWindow('Image', 200, 200)
-cv2.moveWindow(title, 800, 200)
+cv2.moveWindow('Draw Canvas', 800, 200)
 cv2.moveWindow('Color Table', 200, 550)
 
-
+# 키 입력을 받을 때 까지 대기 합니다.
 cv2.waitKey(0)
